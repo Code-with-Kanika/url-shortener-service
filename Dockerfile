@@ -1,22 +1,20 @@
-# Use official Java image
+# Use Java 17 image
 FROM eclipse-temurin:17-jdk-alpine
 
 # Set working directory
 WORKDIR /app
 
-# Copy Maven wrapper and pom
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
+# Copy project files
+COPY . .
 
-# Download dependencies
-RUN ./mvnw dependency:go-offline
-
-# Copy source
-COPY src src
+# Give execute permission to mvnw
+RUN chmod +x mvnw
 
 # Build application
 RUN ./mvnw clean package -DskipTests
 
-# Run jar
-CMD ["java", "-jar", "target/*.jar"]
+# Expose port
+EXPOSE 8080
+
+# Run application
+CMD ["java", "-jar", "target/url-shortener-0.0.1-SNAPSHOT.jar"]
