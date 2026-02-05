@@ -17,4 +17,4 @@ RUN ./mvnw clean package -DskipTests
 EXPOSE 8080
 
 # Run application
-CMD ["java", "-jar", "target/url-shortener-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "target/urlshortener-0.0.1-SNAPSHOT.jar"]
