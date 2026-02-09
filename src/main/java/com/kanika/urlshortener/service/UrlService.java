@@ -1,5 +1,6 @@
 package com.kanika.urlshortener.service;
 
+import java.net.MalformedURLException;
 import java.util.Random;
 
 import org.springframework.stereotype.Service;
@@ -17,7 +18,17 @@ public class UrlService {
     private static final String BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 6;
 
-    public String shortenUrl(String longUrl) {
+    public String shortenUrl(String longUrl) throws MalformedURLException {
+
+        // Trim spaces
+        longUrl = longUrl.trim();
+
+        // Add https if missing
+        if (!longUrl.startsWith("http://") && !longUrl.startsWith("https://")) {
+            longUrl = "https://" + longUrl;
+        }
+        
+        
 
         String shortCode = generateUniqueShortCode(longUrl);
 
@@ -58,6 +69,6 @@ public class UrlService {
     public String getLongUrl(String shortCode) {
         return urlRepository.findByShortCode(shortCode)
                 .map(UrlMapping::getLongUrl)
-                .orElseThrow(() -> new RuntimeException("URL not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Invalid short URL"));
     }
 }

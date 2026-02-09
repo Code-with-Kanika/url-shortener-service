@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kanika's URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .box {
+            background: white;
+            width: 420px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #007bff;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .result {
+            margin-top: 15px;
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h2>🚀 URL Shortener</h2>
+
+    <form action="/shorten-ui" method="post">
+        <input type="text" name="longUrl" placeholder="Enter long URL" required />
+        <br/>
+        <button type="submit">Shorten</button>
+    </form>
+
+    <div class="result" th:if="${shortUrl}">
+        Your Short URL:
+        <br/>
+        <a th:href="${shortUrl}" th:text="${shortUrl}" target="_blank"></a>
+    </div>
+
+    <hr/>
+
+    <p>
+        <a href="https://github.com/Code-with-Kanika/url-shortener-service" target="_blank">
+            View on GitHub
+        </a>
+    </p>
+</div>
+
+</body>
+</html>
