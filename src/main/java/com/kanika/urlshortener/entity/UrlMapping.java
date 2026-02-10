@@ -5,13 +5,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "url_mapping")
+@Table(
+    name = "url_mapping",
+    indexes = {
+        @Index(name = "idx_shortcode", columnList = "shortCode"),
+        @Index(name = "idx_longurl", columnList = "longUrl")
+    }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
