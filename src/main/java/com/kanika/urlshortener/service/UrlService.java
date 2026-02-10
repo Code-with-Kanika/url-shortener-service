@@ -1,8 +1,8 @@
 package com.kanika.urlshortener.service;
 
-import java.net.MalformedURLException;
 import java.util.Random;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.kanika.urlshortener.entity.UrlMapping;
@@ -18,28 +18,30 @@ public class UrlService {
     private static final String BASE62 = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     private static final int CODE_LENGTH = 6;
 
-    public String shortenUrl(String longUrl) throws MalformedURLException {
+   
+    public String shortenUrl(String longUrl) {
 
-        // Trim spaces
-        longUrl = longUrl.trim();
+       String finalUrl = longUrl.trim();
 
-        // Add https if missing
-        if (!longUrl.startsWith("http://") && !longUrl.startsWith("https://")) {
-            longUrl = "https://" + longUrl;
+        if (!finalUrl.startsWith("http")) {
+            finalUrl = "https://" + finalUrl;
         }
-        
-        
+        final String normalizedUrl = finalUrl;
+        return urlRepository.findByLongUrl(normalizedUrl)
+            .map(UrlMapping::getShortCode) // If exists → return old code
+            .orElseGet(() -> {
+                String shortCode = generateUniqueShortCode();
 
-        String shortCode = generateUniqueShortCode(longUrl);
+                UrlMapping mapping = new UrlMapping();
+                mapping.setShortCode(shortCode);
+                mapping.setLongUrl(normalizedUrl);
 
-        UrlMapping mapping = new UrlMapping();
-        mapping.setShortCode(shortCode);
-        mapping.setLongUrl(longUrl);
-
-        urlRepository.save(mapping);
-        return shortCode;
+                urlRepository.save(mapping);
+                return shortCode;
+            });
     }
-    private String generateUniqueShortCode(String longUrl) {
+    
+    private String generateUniqueShortCode() {
         String shortCode;
         int maxLimit =5 ;
         int count=0;
@@ -66,7 +68,9 @@ public class UrlService {
         return sb.toString();
     }
 
+    @Cacheable(value = "urls", key = "#shortCode")
     public String getLongUrl(String shortCode) {
+        System.out.println("Fetching from DB...");
         return urlRepository.findByShortCode(shortCode)
                 .map(UrlMapping::getLongUrl)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid short URL"));

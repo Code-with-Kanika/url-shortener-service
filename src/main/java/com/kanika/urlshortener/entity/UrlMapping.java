@@ -23,6 +23,6 @@ public class UrlMapping {
     @Column(unique = true, nullable = false)
     private String shortCode;
 
-    @Column(nullable = false, length = 2000)
+    @Column(nullable = false, length = 2000, unique = true)
     private String longUrl;
 }
